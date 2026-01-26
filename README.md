@@ -31,7 +31,7 @@ This framework integrates:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/vegetation-contamination-framework.git
+git clone https://github.com/SAAAHco/vegetation-contamination-framework.git
 cd vegetation-contamination-framework
 
 # Create virtual environment
@@ -264,9 +264,9 @@ If you use this framework in your research, please cite:
 @article{author2024vegetation,
   title={Enhancing Vegetation Coverage Monitoring through Artificial 
          Intelligence-Integrated Remote Sensing},
-  author={[Author Names]},
+  author={[Zainab Ashkanani]},
   journal={Remote Sensing of Environment},
-  year={2024},
+  year={2026},
   note={Submitted}
 }
 ```
