@@ -321,4 +321,4 @@ A: Yes! Add custom indices in `models/vegetation_indices.py` following the exist
 
 ## 📧 Contact
 
-For questions or support, please open an issue or contact [your-email@institution.edu].
+For questions or support, please open an issue or contact [Ashkanani@tamu.edu].
