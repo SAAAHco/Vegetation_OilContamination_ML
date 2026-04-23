@@ -265,7 +265,7 @@ If you use this framework in your research, please cite:
   title={Enhancing Vegetation Coverage Monitoring through Artificial 
          Intelligence-Integrated Remote Sensing},
   author={[Zainab Ashkanani]},
-  journal={Remote Sensing of Environment},
+  journal={TBD},
   year={2026},
   note={Submitted}
 }
