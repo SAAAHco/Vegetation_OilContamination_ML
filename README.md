@@ -78,7 +78,7 @@ Ashkanani, Z., Mohtar, R., Al-Momin, M., Hetrick, S., Al-Enezi, S., Abdulrahman,
 
 ## Contact
 
-For questions, open an issue in this repository or contact Ashkanani@tamu.edu.
+For questions, open an issue in this repository or contact Ashkanani@tamu.edu, Ashkanani@saaah.co.
 
 ## License
 
