@@ -1,0 +1,5 @@
+scheme,veg_thr,con_thr,Recovered,Active recovery,Transitional,Bare/degraded,Contaminated,persistence
+terciles,0.20/0.48,3.01/4.38,6,9,30,9,5,0.41
+quartiles,0.18/0.52,2.63/4.64,2,5,42,7,3,0.59
+40/60,0.22/0.41,3.36/3.94,9,12,19,11,8,0.19
+median split,0.35/0.35,3.57/3.57,13,16,2,16,12,0.31

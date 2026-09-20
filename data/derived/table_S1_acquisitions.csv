@@ -1,0 +1,64 @@
+image,date,sensor,s2_cloud,landsat_cloud,radiometric_z,screened
+63,2018-12-14,Sentinel-2 MSI (Sentinel-2A),0.596081,,-1.58,kept
+62,2019-01-31,Sentinel-2 MSI (Sentinel-2B),0.021134,,-0.4,kept
+61,2019-02-24,no same-day archive scene,,,0.68,kept
+60,2019-03-19,Sentinel-2 MSI (Sentinel-2B),0.059998,,-0.03,kept
+59,2019-04-21,Sentinel-2 MSI (Sentinel-2B),0.005871,,1.46,kept
+58,2019-05-26,Sentinel-2 MSI (Sentinel-2A),0.031996,0.12,0.48,kept
+57,2019-06-25,Sentinel-2 MSI (Sentinel-2A),0.016255,,1.4,kept
+56,2019-07-30,Sentinel-2 MSI (Sentinel-2B),1.850792,1.0,-0.63,kept
+55,2019-08-29,Sentinel-2 MSI (Sentinel-2B),0.024489,,-0.38,kept
+54,2019-09-28,Sentinel-2 MSI (Sentinel-2B),0.00697,,-2.5,excluded
+53,2019-10-10,Sentinel-2 MSI (Sentinel-2A),0.092146,0.0,-0.46,kept
+52,2019-11-22,Sentinel-2 MSI (Sentinel-2A),0.050949,,-0.58,kept
+51,2019-12-29,Sentinel-2 MSI (Sentinel-2A),0.078353,0.37,-0.37,kept
+50,2020-01-28,Sentinel-2 MSI (Sentinel-2A),0.362523,,-0.83,kept
+49,2020-02-27,Sentinel-2 MSI (Sentinel-2A),1.487566,,0.02,kept
+48,2020-03-21,Sentinel-2 MSI (Sentinel-2A),0.593168,,-0.3,kept
+47,2020-04-27,Sentinel-2 MSI (Sentinel-2A),0.081476,0.0,-0.38,kept
+46,2020-05-30,Sentinel-2 MSI (Sentinel-2A),0.015122,,0.46,kept
+45,2020-06-19,Sentinel-2 MSI (Sentinel-2A),0.194004,,2.32,excluded
+44,2020-07-31,Sentinel-2 MSI (Sentinel-2B),0.042374,0.0,-0.58,kept
+43,2020-08-28,Sentinel-2 MSI (Sentinel-2A),0.011932,,-0.54,kept
+42,2020-09-27,Sentinel-2 MSI (Sentinel-2A),0.020156,,-1.28,kept
+41,2020-10-22,Sentinel-2 MSI (Sentinel-2B),0.043225,,0.57,kept
+40,2020-11-23,Sentinel-2 MSI (Sentinel-2A),0.049845,,-0.76,kept
+39,2020-12-26,Sentinel-2 MSI (Sentinel-2A),0.1599,,-0.77,kept
+38,2021-01-30,Sentinel-2 MSI (Sentinel-2B),0.010827,,0.16,kept
+37,2021-02-19,Sentinel-2 MSI (Sentinel-2B),0.149516,,0.73,kept
+36,2021-03-26,Sentinel-2 MSI (Sentinel-2A),0.005359,,0.47,kept
+35,2021-04-05,Sentinel-2 MSI (Sentinel-2A),0.058049,0.0,1.09,kept
+34,2021-05-27,Sentinel-2 MSI (Sentinel-2B),0.071191,,-0.24,kept
+33,2021-06-26,Sentinel-2 MSI (Sentinel-2B),0.17707,,0.26,kept
+32,2021-07-24,Sentinel-2 MSI (Sentinel-2A),0.005442,,0.89,kept
+31,2021-08-30,Sentinel-2 MSI (Sentinel-2A),0.068173,,0.2,kept
+30,2021-09-29,Sentinel-2 MSI (Sentinel-2A),0.046003,0.0,-0.26,kept
+29,2021-10-22,Landsat 8 (path 166),,0.08,0.01,kept
+28,2021-11-28,Sentinel-2 MSI (Sentinel-2A),0.071792,,-1.24,kept
+27,2021-12-23,Sentinel-2 MSI (Sentinel-2B),0.167278,,-0.72,kept
+26,2022-01-25,no same-day archive scene,,,-0.63,kept
+25,2022-02-21,Sentinel-2 MSI (Sentinel-2B),0.00044,,0.67,kept
+24,2022-03-26,Sentinel-2 MSI (Sentinel-2B),0.001427,,0.71,kept
+23,2022-04-17,Sentinel-2 MSI (Sentinel-2A),0.306437,0.15,-1.01,kept
+22,2022-05-20,Sentinel-2 MSI (Sentinel-2A),0.000484,,0.85,kept
+21,2022-06-21,Sentinel-2 MSI (Sentinel-2B),0.003152,,0.5,kept
+20,2022-07-19,Sentinel-2 MSI (Sentinel-2A),5.201104,,1.08,kept
+19,2022-08-05,Sentinel-2 MSI (Sentinel-2A),0.002423,,0.41,kept
+18,2022-09-27,Sentinel-2 MSI (Sentinel-2A),1.238679,,-0.14,kept
+17,2022-10-22,Sentinel-2 MSI (Sentinel-2B),0.001421,,-0.86,kept
+16,2022-11-21,Sentinel-2 MSI (Sentinel-2B),0.001494,,-0.79,kept
+15,2022-12-21,Sentinel-2 MSI (Sentinel-2B),0.000685,1.27,-0.95,kept
+14,2023-01-20,Sentinel-2 MSI (Sentinel-2B),0.001154,,-0.58,kept
+13,2023-02-24,Sentinel-2 MSI (Sentinel-2A),0.000849,,1.48,kept
+12,2023-03-01,Sentinel-2 MSI (Sentinel-2B),0.062164,,0.45,kept
+11,2023-04-02,Sentinel-2 MSI (Sentinel-2A),0.246332,0.0,-0.04,kept
+10,2023-05-17,Sentinel-2 MSI (Sentinel-2B),0.000992,,0.22,kept
+9,2023-06-29,Sentinel-2 MSI (Sentinel-2B),0.019314,0.0,3.07,excluded
+8,2023-07-25,Landsat 9 (path 165),,0.0,2.93,excluded
+7,2023-08-18,Sentinel-2 MSI (Sentinel-2B),1.380173,34.36,-0.43,kept
+6,2023-09-27,Sentinel-2 MSI (Sentinel-2B),0.001228,0.0,-1.34,kept
+5,2023-10-27,Sentinel-2 MSI (Sentinel-2B),0.000431,0.0,-0.94,kept
+4,2023-11-11,Sentinel-2 MSI (Sentinel-2A),0.044187,,-0.95,kept
+3,2023-12-16,Sentinel-2 MSI (Sentinel-2B),0.003467,2.27,-0.09,kept
+2,2024-01-30,Sentinel-2 MSI (Sentinel-2A),1.124306,,0.36,kept
+1,2024-02-14,Sentinel-2 MSI (Sentinel-2B),0.022521,,-0.35,kept
