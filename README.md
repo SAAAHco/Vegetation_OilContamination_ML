@@ -1,324 +1,85 @@
-# Vegetation-Contamination Analysis Framework
+# Vegetation and contamination monitoring of the southern Greater Burgan Oil Field, Kuwait
 
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![TensorFlow 2.x](https://img.shields.io/badge/TensorFlow-2.x-orange.svg)](https://www.tensorflow.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+Code and derived data for:
 
-**A reusable template for AI-driven vegetation monitoring in contaminated environments using deep learning and satellite imagery.**
+> Ashkanani, Z., Mohtar, R., Al-Momin, M., Hetrick, S., Al-Enezi, S., Abdulrahman, R., Albatayneh, R.
+> *Deep Learning and Remote Sensing Framework for Assessing Vegetation Recovery in Petroleum-Contaminated Arid Soils Following Large-Scale Remediation.* Journal of Hazardous Materials Advances (revised manuscript HAZADV-D-26-00576).
 
-This repository provides a complete, customizable framework implementing the methodology described in:
+The repository reproduces every quantitative result of the revised manuscript from public archives and from the
+monthly classification masks produced by the CNN. It has three parts:
 
-> **"Enhancing Vegetation Coverage Monitoring through Artificial Intelligence-Integrated Remote Sensing"**
-> 
-> *Remote Sensing of Environment* (submitted)
+| Folder | Content |
+|---|---|
+| `cnn/` | Encoder-decoder CNN, vegetation indices (SAVI, ARVI, HCI), benchmark models, training and evaluation scripts (Sections 2.3, S1.3, S1.4, S1.8). `cnn/config.py` holds the study values. |
+| `scripts/` | Numbered analysis scripts that reproduce Figures 3 to 7 and S1 to S8 and Tables 3 to 6, S1 and S3 (Sections 2.2 to 3.4). |
+| `data/` | Derived data tables used in the paper (`data/derived/`) and the scene date list. Raw inputs are described below. |
 
----
+## Data sources
 
-## 🎯 Overview
+| Input | Source | Access |
+|---|---|---|
+| Landsat 4, 5, 7, 8, 9 Collection 2 Level-2 surface reflectance, 1989 to 2024 | USGS, via Microsoft Planetary Computer STAC (`landsat-c2-l2`) | public, no account needed for search; signed asset URLs are obtained by `planetary-computer` |
+| Sentinel-2 MSI Level-2A, monthly scenes December 2018 to February 2024 | ESA Copernicus, exported through EOS Data Analytics LandViewer as B11/B12/B8A composites; same-day scenes verified in the Planetary Computer `sentinel-2-l2a` collection | public |
+| CHIRPS v2.0 rainfall (0.05 degree) | Climate Hazards Center, via the ClimateSERV API | public |
+| GHCN-Daily air temperature, Kuwait International Airport (KU000405820) | NOAA NCEI | public |
+| Monthly vegetation and contamination masks (63 scenes) | CNN output (this study) | available from the corresponding author on reasonable request, subject to Kuwait Oil Company approval |
+| KOC scope-of-work contamination polygons | Kuwait Oil Company Soil Remediation Group map (Figure 1 of the paper) | digitized from the map by `scripts/06_hci_validation_koc.py` |
+| Field plots (75), TPH by GC-FID, ASD FieldSpec 4 spectra | Kuwait Oil Company and the authors | on reasonable request, subject to KOC approval |
 
-This framework integrates:
-- **CNN encoder-decoder architecture** for vegetation/contamination classification
-- **Vegetation indices** (ARVI, SAVI, HCI) optimized for arid environments
-- **Temporal analysis** (FFT, CUSUM) for detecting recovery patterns
-- **Spatial analysis** (fractal dimension, lacunarity, Markov chains) for landscape characterization
-- **Comprehensive benchmarking** against traditional ML and deep learning models
+## Pipeline
 
----
+All scripts take command-line arguments with defaults that match the folder layout used by the authors; run `python scripts/<name>.py --help`.
 
-## 📋 Quick Start
+| Step | Script | Paper items | Inputs | Outputs |
+|---|---|---|---|---|
+| 1 | `01_landsat_hci_extract.py` | Section 2.2, 2.4 | Planetary Computer (network) | `hci_landsat_allscenes.csv` (one row per scene: window median, percentiles, anomalous fractions) |
+| 2 | `02_hci_summary_figure.py` | Figure 3, Section 3.1 | step 1 output, CHIRPS monthly | `hci_annual_summary.csv`, `Figure_3_HCI_longterm.png/tiff/eps`, cross-sensor offsets |
+| 3 | `03_radiometric_screen.py` | Section 2.2, S1.6, Table S1, Figure S7 | monthly composites, scene dates | `composite_radiometry.csv`, `table_S1_acquisitions.csv` (with same-day archive check), `Figure_S7` |
+| 4 | `04_monthly_series.py` | Sections 3.2, 3.3; Figures 4, 5, S1, S3, S4, S5; Tables 5, 6, S3 | masks, step 3 output, climate | `monthly_final_km2.csv`, statistics text file, figures |
+| 5 | `05_spatial_products.py` | Section 3.4; Figures 6, 7, S8 | masks, step 3 output | `spatial_change_stats.csv`, `fd_multiscale.csv`, `lacunarity_multiscale.csv`, `gradient_profile.csv`, figures |
+| 6 | `06_hci_validation_koc.py` | Section S1.3, Figure S6 | Figure 1 map image, Planetary Computer | `hci_roc_vs_koc.csv`, `Figure_S6` |
+| 7 | `07_georeference_sift.py` | Section 2.2, S1.2 | one composite + same-day Sentinel-2 scene | pixel size and affine transform (`georef_affine.npy`) |
+| 8 | `08_index_sensitivity.py` | Section S1.3 | Sentinel-2 scenes (network) | SAVI L-sensitivity, NDVI and EVI statistics |
+| 9 | `09_climate_fetch.py` | Section 2.2, S1.2 | ClimateSERV, NOAA (network) | `chirps_monthly_site.csv`, `airport_monthly_temp.csv`, `climate_monthly_final.csv` |
+| 10 | `10_annual_maps.py` | Figure S2, Section S2.2 | masks, step 3 output | `Figure_S2_annual_maps.png/tiff/eps`, `fig_s2_annual_stats.csv` (annual areas at the 25% level, largest patches) |
 
-### 1. Installation
+Every figure script writes PNG (300 dpi) and EPS versions of its figures (TIFF as well where the paper uses it); `scripts/epsexport.py` flattens semi-transparent colours before the EPS is written because PostScript has no transparency.
 
-```bash
-# Clone the repository
-git clone https://github.com/SAAAHco/vegetation-contamination-framework.git
-cd vegetation-contamination-framework
+Constants shared by the scripts (analysis window, pixel sizes, screening threshold, thresholds for change classes) are in `config.py`.
 
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# or: venv\Scripts\activate  # Windows
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-### 2. Customize Configuration
-
-**IMPORTANT**: Before using this framework, customize `config.py` for your study:
-
-```python
-from config import Config
-
-# Load default configuration
-config = Config()
-
-# ============================================
-# CUSTOMIZE THESE FOR YOUR STUDY AREA
-# ============================================
-
-# Study area (Section 2.1)
-config.study_area.name = "Your_Study_Site"
-config.study_area.latitude = 35.0  # Your latitude
-config.study_area.longitude = -120.0  # Your longitude
-config.study_area.area_km2 = 100.0  # Your study area size
-config.study_area.crs_epsg = 32610  # Your UTM zone
-
-# Satellite configuration (Section S1.2)
-config.satellite.sensor_name = "Sentinel-2"  # Your sensor
-config.satellite.spatial_resolution_m = 10.0
-
-# Vegetation indices calibration (Section S1.3)
-# *** CALIBRATE WITH YOUR GROUND TRUTH DATA ***
-config.vegetation_index.hci_tph_slope = 12847.0  # From YOUR regression
-config.vegetation_index.hci_tph_intercept = 1243.0
-
-# Recovery state thresholds (Section S1.7.5)
-# *** ADJUST FOR YOUR VEGETATION COMMUNITIES ***
-config.recovery_states.states['recovered']['savi_min'] = 0.30
-config.recovery_states.states['contaminated']['hci_min'] = 0.35
-
-# Validate configuration
-issues = config.validate()
-for issue in issues:
-    print(issue)
-```
-
-### 3. Run Analysis
+### CNN training (`cnn/`)
 
 ```bash
-# Train CNN model
-python scripts/train_cnn.py --data_dir /path/to/your/data --output_dir ./outputs
-
-# Run benchmark comparisons
-python scripts/run_benchmarks.py --data_dir /path/to/your/data
+cd cnn
+python scripts/train_cnn.py --data_dir <patch folder> --output_dir ./outputs --n_folds 5 --augment --seed 42
+python scripts/run_benchmarks.py --data_dir <patch folder>
 ```
 
----
+The configuration (`cnn/config.py`) reproduces Table S2 of the paper: 2,500 patches of 256 x 256 pixels split 60/20/20 by
+spatial block before augmentation, augmentation of the training set only (factor 8), five-fold spatially blocked
+cross-validation, He-normal initialization, Adam (0.001, cosine annealing), batch 32, 100 epochs with early stopping
+(patience 15), L2 1e-4, dropout 0.3, gradient clipping 1.0.
 
-## 📁 Repository Structure
+## Reproducing the paper from the derived data
 
-```
-vegetation-contamination-framework/
-├── config.py                    # 🔧 CUSTOMIZE THIS FIRST
-├── requirements.txt
-├── LICENSE
-├── README.md
-│
-├── models/                      # Core ML models
-│   ├── cnn_encoder_decoder.py   # CNN architecture (Eq. 6-10)
-│   └── vegetation_indices.py    # ARVI, SAVI, HCI (Eq. 1-3)
-│
-├── benchmarks/                  # Comparison models (S1.8)
-│   ├── traditional_ml.py        # RF, SVM, XGBoost
-│   └── deep_learning.py         # VGG-16, ResNet-50, U-Net, DeepLabV3+
-│
-├── analysis/                    # Analysis modules
-│   ├── temporal_analysis.py     # FFT, CUSUM (Eq. 11-13)
-│   └── spatial_analysis.py      # Fractal, lacunarity (Eq. 15)
-│
-├── preprocessing/               # Data preparation
-│   ├── data_loader.py           # Satellite image I/O
-│   ├── data_augmentation.py     # Training augmentation
-│   └── patch_extraction.py      # Patch extraction
-│
-├── utils/                       # Utilities
-│   ├── metrics.py               # Evaluation metrics (Eq. 4-5, 14)
-│   └── visualization.py         # Plotting functions
-│
-├── scripts/                     # Executable scripts
-│   ├── train_cnn.py             # Training pipeline
-│   └── run_benchmarks.py        # Benchmark comparisons
-│
-└── notebooks/                   # Jupyter notebooks
-    └── 01_demonstration.ipynb   # Interactive demo
-```
+If the raw masks and composites are not available, steps 2 and 4 to 5 can be re-run from the tables in `data/derived/`
+(`monthly_final_km2.csv` contains the screened monthly class areas; `hci_landsat_allscenes.csv` contains the full Landsat record).
 
----
+## Environment
 
-## 🔬 Methodology Implementation
+Python 3.10 or later. Install with `pip install -r requirements.txt`. Steps 1, 2, 6, 7, 8 and 9 need internet access.
+The Landsat extraction (step 1) reads about 1,300 scenes and takes 40 to 60 minutes; signed URLs expire after about an hour, so the script re-signs items in batches.
 
-This framework implements all methods described in the manuscript and supplementary material:
+## Citation
 
-### Vegetation Indices (Section 2.3, S1.3)
+If you use this code or the derived tables, please cite the paper:
 
-| Index | Equation | Reference | Parameters to Customize |
-|-------|----------|-----------|------------------------|
-| **ARVI** | `(NIR - RB) / (NIR + RB)` where `RB = Red - γ(Blue - Red)` | Eq. 1 | `γ` (default: 1.0) |
-| **SAVI** | `((NIR - Red) / (NIR + Red + L)) × (1 + L)` | Eq. 2 | `L` (default: 0.5) |
-| **HCI** | `(ρ₂₁₀₀ - ρ₆₆₀) / (ρ₂₁₀₀ + ρ₆₆₀)` | Eq. 3 | Band mapping, TPH calibration |
+Ashkanani, Z., Mohtar, R., Al-Momin, M., Hetrick, S., Al-Enezi, S., Abdulrahman, R., Albatayneh, R. Deep Learning and Remote Sensing Framework for Assessing Vegetation Recovery in Petroleum-Contaminated Arid Soils Following Large-Scale Remediation. Journal of Hazardous Materials Advances (in revision). Repository: https://github.com/SAAAHco/Vegetation_OilContamination_ML (tag `v1.1-revision`).
 
-### CNN Architecture (Section 2.3, S1.4)
+## Contact
 
-| Component | Specification | Customizable |
-|-----------|--------------|--------------|
-| Encoder | 5 blocks (32→64→128→256→512 filters) | Filter counts |
-| Decoder | Transposed conv with skip connections | Yes |
-| Input | 256×256 pixels, 6 bands | Patch size, bands |
-| Output | Pixel-wise classification | Number of classes |
-| Training | Adam, lr=0.001, cosine annealing | All hyperparameters |
+For questions, open an issue in this repository or contact Ashkanani@tamu.edu.
 
-### Temporal Analysis (S1.5)
+## License
 
-| Method | Equation | Key Parameters |
-|--------|----------|----------------|
-| **FFT** | `X(k) = Σₙ x(n)·e^(-j2πkn/N)` | Freq range: 0.1-12 cycles/yr |
-| **CUSUM** | `CUSUMₙ = max(0, CUSUMₙ₋₁ + xₙ - μ - k)` | k=0.5σ, h=4σ |
-
-### Spatial Analysis (S1.7)
-
-| Method | Equation | Application |
-|--------|----------|-------------|
-| **Fractal Dimension** | `FD = lim(log N(ε) / log(1/ε))` | Pattern complexity |
-| **Lacunarity** | `Λ(r) = (σ²/μ²) + 1` | Spatial heterogeneity |
-| **Markov Chain** | Transition probability matrix | Recovery state dynamics |
-
----
-
-## 🔧 Customization Guide
-
-### Step 1: Configure Study Area
-
-Edit `config.py` to set your geographic bounds, coordinate system, and temporal range.
-
-### Step 2: Calibrate Vegetation Indices
-
-**Critical**: The HCI-TPH relationship must be calibrated with YOUR ground truth data:
-
-```python
-# Collect field samples with:
-# - GPS coordinates
-# - TPH concentration (lab analysis)
-# - Coincident satellite imagery
-
-# Perform linear regression: TPH = slope × HCI + intercept
-# Update in config.py:
-config.vegetation_index.hci_tph_slope = YOUR_SLOPE
-config.vegetation_index.hci_tph_intercept = YOUR_INTERCEPT
-config.vegetation_index.hci_calibration_r2 = YOUR_R2
-```
-
-### Step 3: Define Recovery States
-
-Adjust SAVI/HCI thresholds for your vegetation communities:
-
-```python
-# Example for grassland ecosystem
-config.recovery_states.states = {
-    'recovered': {'savi_min': 0.40, 'hci_max': 0.05},
-    'active_recovery': {'savi_min': 0.20, 'savi_max': 0.40, 'hci_max': 0.15},
-    'transitional': {'savi_min': 0.10, 'savi_max': 0.25, 'hci_min': 0.10, 'hci_max': 0.30},
-    'bare_degraded': {'savi_max': 0.10, 'hci_max': 0.10},
-    'contaminated': {'hci_min': 0.30}
-}
-```
-
-### Step 4: Prepare Training Data
-
-```python
-from preprocessing.data_loader import SatelliteDataLoader
-from preprocessing.patch_extraction import PatchExtractor
-
-# Load your satellite imagery
-loader = SatelliteDataLoader(
-    data_dir='/path/to/your/imagery',
-    bands=config.satellite.analysis_bands
-)
-images, labels = loader.load_dataset()
-
-# Extract patches
-extractor = PatchExtractor(
-    patch_size=config.cnn.input_height,
-    overlap=0.25,
-    min_valid_ratio=0.8
-)
-X, y = extractor.extract_patches_from_dataset(images, labels)
-```
-
----
-
-## 📊 Expected Performance
-
-When properly calibrated, this framework achieves results comparable to the methodology benchmarks:
-
-| Model | Accuracy | F1 Score | Cohen's κ |
-|-------|----------|----------|-----------|
-| SVM (RBF) | ~79% | ~0.76 | ~0.58 |
-| Random Forest | ~82% | ~0.79 | ~0.62 |
-| XGBoost | ~84% | ~0.81 | ~0.65 |
-| VGG-16 | ~82% | ~0.79 | ~0.61 |
-| ResNet-50 | ~84% | ~0.82 | ~0.67 |
-| U-Net | ~87% | ~0.85 | ~0.73 |
-| DeepLabV3+ | ~86% | ~0.84 | ~0.71 |
-| **CNN (This framework)** | **~89%** | **~0.88** | **~0.76** |
-
-*Note: Actual results depend on your specific dataset, calibration quality, and study area characteristics.*
-
----
-
-## 📝 Citation
-
-If you use this framework in your research, please cite:
-
-```bibtex
-@article{author2024vegetation,
-  title={Enhancing Vegetation Coverage Monitoring through Artificial 
-         Intelligence-Integrated Remote Sensing},
-  author={[Zainab Ashkanani]},
-  journal={TBD},
-  year={2026},
-  note={Submitted}
-}
-```
-
----
-
-## 📚 References
-
-Key methodological references:
-
-1. **ARVI**: Kaufman, Y.J., & Tanre, D. (1992). *IEEE Trans. Geosci. Remote Sens.*, 30, 261-270.
-2. **SAVI**: Huete, A.R. (1988). *Remote Sensing of Environment*, 25, 295-309.
-3. **HCI**: Kühn, F., et al. (2004). *Int. J. Remote Sens.*, 25, 2467-2473.
-4. **CUSUM**: Ygorra, B., et al. (2021). *Int. J. Appl. Earth Obs. Geoinf.*, 103, 102532.
-5. **Fractal Analysis**: Li, H., et al. (2009). *Landscape Ecology*, 24, 291-302.
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/new-method`)
-3. Commit changes (`git commit -am 'Add new analysis method'`)
-4. Push to branch (`git push origin feature/new-method`)
-5. Open a Pull Request
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.
-
----
-
-## ❓ FAQ
-
-**Q: Can I use this for non-oil contamination studies?**
-A: Yes! The framework is applicable to any vegetation stress monitoring. Adjust the HCI or create custom indices for your contaminant type.
-
-**Q: What satellite sensors are supported?**
-A: The framework works with any multispectral sensor. Configure band mappings in `config.py` for your sensor (Landsat-8/9, Sentinel-2, MODIS, etc.).
-
-**Q: How much ground truth data do I need?**
-A: Minimum ~50 field samples for HCI-TPH calibration, ~75+ plots for robust validation. More data improves calibration accuracy.
-
-**Q: Can I use different vegetation indices?**
-A: Yes! Add custom indices in `models/vegetation_indices.py` following the existing patterns.
-
----
-
-## 📧 Contact
-
-For questions or support, please open an issue or contact [Ashkanani@tamu.edu].
+MIT (see `LICENSE`). Landsat data courtesy of the U.S. Geological Survey; Sentinel-2 data contain modified Copernicus Sentinel data; CHIRPS by the Climate Hazards Center, University of California, Santa Barbara; GHCN-Daily by NOAA NCEI.
