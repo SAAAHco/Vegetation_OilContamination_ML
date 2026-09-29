@@ -26,7 +26,6 @@ from .vegetation_indices import (
     calculate_evi,
     calculate_enhanced_vi,
     calculate_all_indices,
-    tph_from_hci,
     classify_recovery_state
 )
 
@@ -46,6 +45,5 @@ __all__ = [
     'calculate_evi',
     'calculate_enhanced_vi',
     'calculate_all_indices',
-    'tph_from_hci',
     'classify_recovery_state'
 ]

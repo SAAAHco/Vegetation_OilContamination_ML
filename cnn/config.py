@@ -116,15 +116,15 @@ class VegetationIndexConfig:
     hci_band_2100nm: str = 'swir2'  # Band approximating 2100nm
     hci_band_660nm: str = 'red'     # Band approximating 660nm
     
-    # HCI-TPH calibration [CUSTOMIZE with your ground truth data]
-    # TPH (mg/kg) = hci_slope * HCI + hci_intercept
-    hci_tph_slope: float = 12847.0  # [CUSTOMIZE] Calibration slope from your data
-    hci_tph_intercept: float = 1243.0  # [CUSTOMIZE] Calibration intercept
-    hci_calibration_r2: float = 0.78  # [CUSTOMIZE] R² of your calibration
+    # HCI to TPH conversion: not used. The paper applies no regression of HCI on TPH
+    # (Section 2.3); the index is expressed relative to the pre-war envelope.
+    hci_tph_slope: float = 0.0  # unused placeholder
+    hci_tph_intercept: float = 0.0  # unused placeholder
+    hci_calibration_r2: float = 0.0  # unused placeholder
     
-    # Detection thresholds [CUSTOMIZE based on your calibration]
+    # Detection thresholds (prototype only)
     hci_detection_limit: float = 0.10  # Prototype state thresholds only; not used in the revised analysis (see paper, Section 2.3)
-    hci_detection_tph_mgkg: float = 2500  # Corresponding TPH concentration
+    hci_detection_tph_mgkg: float = 0.0  # unused placeholder (no HCI to TPH conversion)
 
 
 # =============================================================================
@@ -432,8 +432,6 @@ class Config:
             issues.append("WARNING: Study area size not set (still 0.0)")
         if self.study_area.name == "Your_Study_Site":
             issues.append("WARNING: Study area name not customized")
-        if self.vegetation_index.hci_tph_slope == 0.0:
-            issues.append("WARNING: HCI-TPH calibration slope not set")
             
         # Validate ranges
         if not 0 <= self.vegetation_index.savi_L <= 1:

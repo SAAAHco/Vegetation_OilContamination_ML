@@ -142,8 +142,9 @@ def calculate_hci(
     Simplified implementation using available bands:
         HCI = (SWIR2 - Red) / (SWIR2 + Red)
     
-    Higher HCI values indicate greater hydrocarbon presence.
-    Calibration: TPH (mg/kg) = 12,847 × HCI + 1,243 (R² = 0.78)
+    The index is used as a relative, window-scale measure expressed against the
+    pre-war envelope; no conversion of HCI to a TPH concentration is applied
+    (paper, Section 2.3).
     
     Args:
         swir1: Short-wave infrared band 1 (Landsat-8 Band 6 / Sentinel-2 B11)
@@ -378,8 +379,8 @@ def classify_contamination(
     """
     Classify pixels as contaminated based on HCI threshold.
     
-    From manuscript: "Detection limits were established at HCI > 0.10, 
-    corresponding to approximately 2,500 mg/kg TPH"
+    Prototype helper only. The paper applies no fixed HCI detection limit and
+    no HCI to TPH conversion (Section 2.3); the contamination maps come from the CNN.
     
     Args:
         hci: HCI values

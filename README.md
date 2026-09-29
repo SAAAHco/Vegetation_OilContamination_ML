@@ -3,7 +3,7 @@
 Code and derived data for:
 
 > Ashkanani, Z., Mohtar, R., Al-Momin, M., Hetrick, S., Al-Enezi, S., Abdulrahman, R., Albatayneh, R.
-> *Deep Learning and Remote Sensing Framework for Assessing Vegetation Recovery in Petroleum-Contaminated Arid Soils Following Large-Scale Remediation.* Journal of Hazardous Materials Advances (revised manuscript HAZADV-D-26-00576).
+> *Separating Climate from Remediation Signals in Satellite Monitoring of Vegetation in Petroleum-Contaminated Arid Soils.* Journal of Hazardous Materials Advances (revised manuscript HAZADV-D-26-00576).
 
 The repository reproduces every quantitative result of the revised manuscript from public archives and from the
 monthly classification masks produced by the CNN. It has three parts:
@@ -11,7 +11,7 @@ monthly classification masks produced by the CNN. It has three parts:
 | Folder | Content |
 |---|---|
 | `cnn/` | Encoder-decoder CNN, vegetation indices (SAVI, ARVI, HCI), benchmark models, training and evaluation scripts (Sections 2.3, S1.3, S1.4, S1.8). `cnn/config.py` holds the study values. |
-| `scripts/` | Numbered analysis scripts that reproduce Figures 3 to 7 and S1 to S8 and Tables 3 to 6, S1 and S3 (Sections 2.2 to 3.4). |
+| `scripts/` | Numbered analysis scripts that reproduce Figures 3 to 7 and S1 to S7 and Tables 3 to 5, S1, S3 and S4 (Sections 2.2 to 3.4). |
 | `data/` | Derived data tables used in the paper (`data/derived/`) and the scene date list. Raw inputs are described below. |
 
 ## Data sources
@@ -32,16 +32,19 @@ All scripts take command-line arguments with defaults that match the folder layo
 
 | Step | Script | Paper items | Inputs | Outputs |
 |---|---|---|---|---|
-| 1 | `01_landsat_hci_extract.py` | Section 2.2, 2.4 | Planetary Computer (network) | `hci_landsat_allscenes.csv` (one row per scene: window median, percentiles, anomalous fractions) |
+| 1 | `01_landsat_hci_extract.py` | Section 2.2, 2.5 | Planetary Computer (network) | `hci_landsat_allscenes.csv` (one row per scene: window median, percentiles, anomalous fractions) |
 | 2 | `02_hci_summary_figure.py` | Figure 3, Section 3.1 | step 1 output, CHIRPS monthly | `hci_annual_summary.csv`, `Figure_3_HCI_longterm.png/tiff/eps`, cross-sensor offsets |
-| 3 | `03_radiometric_screen.py` | Section 2.2, S1.6, Table S1, Figure S7 | monthly composites, scene dates | `composite_radiometry.csv`, `table_S1_acquisitions.csv` (with same-day archive check), `Figure_S7` |
-| 4 | `04_monthly_series.py` | Sections 3.2, 3.3; Figures 4, 5, S1, S3, S4, S5; Tables 5, 6, S3 | masks, step 3 output, climate | `monthly_final_km2.csv`, statistics text file, figures |
-| 5 | `05_spatial_products.py` | Section 3.4; Figures 6, 7, S8 | masks, step 3 output | `spatial_change_stats.csv`, `fd_multiscale.csv`, `lacunarity_multiscale.csv`, `gradient_profile.csv`, figures |
-| 6 | `06_hci_validation_koc.py` | Section S1.3, Figure S6 | Figure 1 map image, Planetary Computer | `hci_roc_vs_koc.csv`, `Figure_S6` |
+| 3 | `03_radiometric_screen.py` | Section 2.2, 2.4, S1.6, Table S1, Figure S5 | monthly composites, scene dates | `composite_radiometry.csv`, `table_S1_acquisitions.csv` (with same-day archive check), `Figure_S5` (file name `Figure_S7_radiometric_screen`) |
+| 4 | `04_monthly_series.py` | Sections 3.2, 3.3; Figures 4, 5, S1, S3 (periodogram); Tables 5, S3, S4 (the seasonal and pre/post panels of the former Figures S3 and S4 are now only in Figure 5) | masks, step 3 output, climate | `monthly_final_km2.csv`, statistics text file, figures |
+| 5 | `05_spatial_products.py` | Section 3.4; Figures 6, S6 | masks, step 3 output | `spatial_change_stats.csv`, `fd_multiscale.csv` and `lacunarity_multiscale.csv` (native grids, superseded for the paper by step 11), `gradient_profile.csv`, figures |
+| 6 | `06_hci_validation_koc.py` | Section S1.3, Figure S4 | Figure 1 map image, Planetary Computer | `hci_roc_vs_koc.csv`, `Figure_S4` (file name `Figure_S6_hci_validation`) |
 | 7 | `07_georeference_sift.py` | Section 2.2, S1.2 | one composite + same-day Sentinel-2 scene | pixel size and affine transform (`georef_affine.npy`) |
 | 8 | `08_index_sensitivity.py` | Section S1.3 | Sentinel-2 scenes (network) | SAVI L-sensitivity, NDVI and EVI statistics |
 | 9 | `09_climate_fetch.py` | Section 2.2, S1.2 | ClimateSERV, NOAA (network) | `chirps_monthly_site.csv`, `airport_monthly_temp.csv`, `climate_monthly_final.csv` |
 | 10 | `10_annual_maps.py` | Figure S2, Section S2.2 | masks, step 3 output | `Figure_S2_annual_maps.png/tiff/eps`, `fig_s2_annual_stats.csv` (annual areas at the 25% level, largest patches) |
+| 11 | `11_pattern_metrics_common_grid.py` | Section 2.3, 3.4, S1.7.4; Figure 7 | masks, step 3 output | `fd_common_grid.csv`, `lacunarity_common_grid.csv`, `fd_common_numbers.json`, `Figure_7_fractal_multiscale.png/tiff/eps` (both classes on the 13.1 m vegetation grid; contamination resampled by majority rule) |
+| 12 | `12_l2a_export_check.py` | Section 2.4, S2.8; Figure S7 | step 4 output, Planetary Computer (network) | `l2a_check.csv`, `Figure_S7_l2a_check.png/tiff/eps` (export-based vegetation class area against SAVI > 0.15 on Level-2A reflectance for 20 screened scenes) |
+| 13 | `13_detectable_effect.py` | Section 3.2 (minimum detectable effect) | step 4 output | `power_numbers.json` (bootstrap power of the pre/post Mann-Whitney comparison; asymptotic minimum detectable rank-biserial effect) |
 
 Every figure script writes PNG (300 dpi) and EPS versions of its figures (TIFF as well where the paper uses it); `scripts/epsexport.py` flattens semi-transparent colours before the EPS is written because PostScript has no transparency.
 
@@ -74,7 +77,7 @@ The Landsat extraction (step 1) reads about 1,300 scenes and takes 40 to 60 minu
 
 If you use this code or the derived tables, please cite the paper:
 
-Ashkanani, Z., Mohtar, R., Al-Momin, M., Hetrick, S., Al-Enezi, S., Abdulrahman, R., Albatayneh, R. Deep Learning and Remote Sensing Framework for Assessing Vegetation Recovery in Petroleum-Contaminated Arid Soils Following Large-Scale Remediation. Journal of Hazardous Materials Advances (in revision). Repository: https://github.com/SAAAHco/Vegetation_OilContamination_ML (tag `v1.1-revision`).
+Ashkanani, Z., Mohtar, R., Al-Momin, M., Hetrick, S., Al-Enezi, S., Abdulrahman, R., Albatayneh, R. Separating Climate from Remediation Signals in Satellite Monitoring of Vegetation in Petroleum-Contaminated Arid Soils. Journal of Hazardous Materials Advances (in revision). Repository: https://github.com/SAAAHco/Vegetation_OilContamination_ML (tag `v1.2-revision`).
 
 ## Contact
 

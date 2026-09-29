@@ -9,6 +9,7 @@ WINDOW_LONLAT = (47.86, 28.846, 48.026, 28.934)              # approximate lon/l
 COMPOSITE_PX_EW_M = 5.00
 COMPOSITE_PX_NS_M = 5.04
 COMPOSITE_SHAPE = (2141, 3647)        # rows, cols
+COMPOSITE_ORIGIN_UTM38 = (778487.0, 3201570.0)   # easting, northing of the upper-left corner of the exports (from step 7)
 VEGMASK_SHAPE = (818, 1395)           # rows, cols of the vegetation product (13.1 m x 13.2 m)
 KM2_PER_CONTAMINATION_PIXEL = COMPOSITE_PX_EW_M * COMPOSITE_PX_NS_M / 1e6
 KM2_PER_VEGETATION_PIXEL = (COMPOSITE_PX_EW_M * COMPOSITE_SHAPE[1] / VEGMASK_SHAPE[1]) * (COMPOSITE_PX_NS_M * COMPOSITE_SHAPE[0] / VEGMASK_SHAPE[0]) / 1e6
